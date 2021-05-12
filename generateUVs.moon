@@ -1,7 +1,7 @@
 import insert from table
 import newQuad from love.graphics
 
-generateUVs = (texture, tileSize)->
+generateUVs = (texture, tileWidth, tileHeight) ->
 	uvsQuads = {}
 	uvs = {}
 
@@ -10,10 +10,10 @@ generateUVs = (texture, tileSize)->
 	print textureW, textureH
 
 	-- tile width/height as a persentage of the texture
-	widthPs = tileSize / textureW
-	heightPs = tileSize / textureH
-	cols = textureW / tileSize
-	rows = textureH / tileSize
+	widthPs = tileWidth / textureW
+	heightPs = tileHeight / textureH
+	cols = textureW / tileWidth
+	rows = textureH / tileHeight
 
 	-- top left position of the tile in texture
 	left = 0
