@@ -7,7 +7,6 @@ generateUVs = (texture, tileWidth, tileHeight) ->
 
 	textureW = texture\getWidth!
 	textureH = texture\getHeight!
-	print textureW, textureH
 
 	-- tile width/height as a persentage of the texture
 	widthPs = tileWidth / textureW
