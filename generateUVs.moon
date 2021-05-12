@@ -23,10 +23,10 @@ generateUVs = (texture, tileSize)->
 	for j = 0, rows - 1
 		for i = 0, cols - 1
 			insert uvs, newQuad left * textureW,
-													top * textureH,
-													right * textureW,
-													bottom * textureH,
-													texture
+				top * textureH,
+				right * textureW,
+				bottom * textureH,
+				texture
 		left = 0
 		top += textureH
 		right = textureW
