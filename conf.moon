@@ -1,5 +1,5 @@
 with love
   .conf = (t) ->
-    t.window.width = 128
-    t.window.height = 128
-    t.window.title = "128x128"
+    t.window.width = 512
+    t.window.height = 512
+    t.window.title = "256x256"

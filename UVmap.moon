@@ -2,8 +2,9 @@ generateUVs = assert require "generateUVs"
 import max from math
 import min from math
 import floor from math
+import ceil from math
 Graphics = love.graphics
-
+Keyboard = love.keyboard
 
 class UVMap
   new: (mapDef, assetsPath) =>
@@ -15,36 +16,61 @@ class UVMap
     @tiles = @layer.data
     @tileWidth = @mapDef.tilesets[1].tilewidth
     @tileHeight = @mapDef.tilesets[1].tileheight
-    @mX = 0
-    @mY = 0
     @mapWidthpx = @mapWidth * @tileWidth
     @mapHeightpx = @mapHeight * @tileHeight
+    @mX = 0
+    @mY = 0
     @UVs, @uvs = generateUVs @textureAtlas,
       @mapDef.tilesets[1].tilewidth,
       @mapDef.tilesets[1].tileheight
     -- Camera
     @mapCamX = 0
     @mapCamY = 0
+    @drawX = Graphics.getWidth!
+    @drawY = Graphics.getHeight!
+    @tLeft, @tBottom = @pointToTile @mX - @drawX,
+      @mY - @drawY
+    @tRight, @tTop = @pointToTile @mX + @drawX,
+      @mY + @drawY
 
   draw: () =>
     -- top_left & bottom right of the camera
-    tLeft, tBottom = @pointToTile @mapCamX - Graphics\getWidth!,
-      @mapCamY - Graphics\getHeight!
-    tRight, tTop = @pointToTile @mapCamX + Graphics\getWidth!,
-      @mapCamY + Graphics\getHeight!
+    tLeft, tBottom = @pointToTile @mX - @drawX,
+      @mY - @drawY
+    tRight, tTop = @pointToTile @mX + @drawX,
+      @mY + @drawY
+
+    tLeft += max 0, tRight - @tRight
+    tTop += max 0, tBottom - @tBottom
 
     for j = tTop, tBottom
       for i = tLeft, tRight
         tile = @getTile i, j
-        uvs = @UVs[tile]
-        Graphics.draw @textureAtlas, uvs, i * @tileWidth,
-          j * @tileHeight
+        quad = @UVs[tile]
+        Graphics.draw @textureAtlas, quad, @mX + i * @tileWidth,
+          @mY + j * @tileHeight
+
+
+  update: (dt) =>
+    Graphics.translate -@mX, -@mY
+    if Keyboard.wasPressed 'd'
+      @mX -= 10
+      @drawX += 10
+    if Keyboard.wasPressed 'q'
+      @mX += 10
+      @drawX -= 10
+    if Keyboard.wasPressed 'z'
+      @mY += 10
+      @drawY -= 10
+    if Keyboard.wasPressed 's'
+      @mY -= 10
+      @drawY += 10
+    if Keyboard.wasPressed 'a'
+      @goto -240, -240
 
   -- associates a point in the window to a tile
   pointToTile: (x, y) =>
     -- y should be negative so : y == -y
-    x += @tileWidth / 2
-    y -= @tileHeight / 2
 
     x = max @mX , x
     y = min @mY , y
