@@ -29,18 +29,18 @@ class UVMap
 
   draw: () =>
     -- top_left & bottom right of the camera
-    tLeft, tBottom = @pointToTile @mX - @mapWidthpx,
-      -@mY - @mapHeightpx
-    tRight, tTop = @pointToTile @mX + @mapWidthpx,
-      -@mY + @mapHeightpx
+    tLeft, tBottom = @pointToTile @mX - @mapWidthpx / 2,
+      -@mY - @mapHeightpx / 2
+    tRight, tTop = @pointToTile @mX + @mapWidthpx / 2,
+      -@mY + @mapHeightpx / 2
 
     for j = tTop, tBottom
       for i = tLeft, tRight
         tile = @getTile i, j
         quad = @UVs[tile]
         if quad != nil
-          Graphics.draw @textureAtlas, quad, @mapViewX + i * @tileWidth,
-            @mapViewY + j * @tileHeight
+          Graphics.draw @textureAtlas, quad, @mapViewX + (i * @tileWidth),
+            @mapViewY + (j * @tileHeight)
 
 
   update: (dt) =>
@@ -65,9 +65,6 @@ class UVMap
   -- associates a point in the window to a tile
   pointToTile: (x, y) =>
     -- y should be negative so : y == -y
-    x += @tileWidth / 2
-    y += @tileHeight / 2
-
     x = max @mX , x
     y = min @mY , y
 
