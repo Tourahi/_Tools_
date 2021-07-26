@@ -1,8 +1,17 @@
 generateUVs = assert require "generateUVs"
+import random from love.math
 Map = assert require "UVmap"
 export Keyboard = love.keyboard
 Keyboard.keysPressed = {}
 export Event = love.event
+M = assert require 'moon'
+export Dump = M.p
+
+assert require "Shake"
+
+export Random = (min , max) ->
+  min, max = min or 0, max or 1
+  (min > max and (love.math.random()*(min - max) + max)) or (love.math.random()*(max - min) + min)
 
 atlas = love.graphics.newImage "assets/atlas.png"
 
@@ -16,10 +25,14 @@ with love
     --for i, uv in ipairs map.uvs
       --print uv[1], uv[2], uv[3], uv[4]
       --uv\release!
+    export s = Shake(4, 60, 100)
+
 
   .update = (dt) ->
     map\update dt
     Keyboard.keysPressed = {}
+    print s\getAmplitude!
+    s\update dt
 
 
   .keypressed = (key) ->
