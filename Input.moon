@@ -15,7 +15,7 @@ callbacks = {
 
 getTableKeys = (tab) ->
   keyset = {}
-  for k,v in pairs(tab) do
+  for k,v in pairs(tab)
     keyset[#keyset + 1] = k
   keyset
 
