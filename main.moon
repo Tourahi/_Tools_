@@ -15,10 +15,15 @@ export Random = (min , max) ->
 
 atlas = love.graphics.newImage "assets/atlas.png"
 
+Input = assert require 'Input'
+
+
 with love
   .load  = ->
     mapDef = assert require "assets.map"
     export map = Map mapDef, "assets/"
+    inpt = Input!
+    Dump inpt
     --x, y = map\pointToTile 32,-16
     --print x, y
 
@@ -31,7 +36,6 @@ with love
   .update = (dt) ->
     map\update dt
     Keyboard.keysPressed = {}
-    print s\getAmplitude!
     s\update dt
 
 
