@@ -1,5 +1,7 @@
 import insert from table
 import timer from love
+import keyboard from love
+import mouse from love
 
 callbacks = {
   'keypressed',
@@ -11,6 +13,14 @@ callbacks = {
   'gamepadaxis',
   'wheelmoved',
   'update'
+}
+
+keyToButton = {
+  mouse1: '1',
+  mouse2: '2',
+  mouse3: '3',
+  mouse4: '4',
+  mouse5: '5'
 }
 
 getTableKeys = (tab) ->
@@ -107,6 +117,39 @@ class Input
             else
               @sequences[sequenceKey] = nil
 
+  down: (action = nil, interval = nil, delay = nil) =>
+
+    if action and interval and delay
+      for _, key in ipairs @binds[action]
+        if @state[key] and not @prevState[key]
+          @repeatState[key] = {
+            pressedTime: timer.getTime!,
+            delay: 0,
+            interval: interval,
+            delayed: true
+          }
+          return true
+        else if @state[key] and @prevState[key]
+          return true
+
+
+    if action and interval and not delay
+      for _, key in ipairs @binds[action]
+        if @state[key] and not @prevState[key]
+          @repeatState[key] = {
+            pressedTime: timer.getTime!,
+            delay: 0,
+            interval: interval,
+            delayed: false
+          }
+          return true
+        else if @state[key] and @prevState[key]
+          return true
+
+    if action and not interval and not delay
+      for _, key in ipairs @binds[action]
+        if keyboard.isDown(key) or mouse.isDown(keyToButton[key] or 0)
+          return true
 
 
 
