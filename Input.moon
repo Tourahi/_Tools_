@@ -1,5 +1,5 @@
 import insert from table
-
+import timer from love
 
 callbacks = {
   'keypressed',
@@ -62,6 +62,52 @@ class Input
     for _, key in ipairs(@binds[action])
       if @prevState[key] and not @state[key]
         return true
+
+  sequence: (...) =>
+    sequence = {...}
+    if #sequence <= 1
+      error("Use pressed if only checking one action.")
+    if type(sequence[#sequence]) ~= 'string'
+      error("The last argument must be an action :: string.")
+    if #sequence % 2 == 0
+      error("The number of arguments must be odd.")
+
+    sequenceKey = ''
+    for _, seq in ipairs sequence
+      sequence ..= tostring(seq)
+
+    if not @sequences[sequenceKey]
+      @sequences[sequenceKey] = {
+        sequence: sequence,
+        currentIdx: 1
+      }
+    else
+      if @sequences[sequenceKey].currentIdx == 1
+        action = @sequences[sequenceKey].sequence[@sequences[sequenceKey].currentIdx]
+        for _, key in ipairs @binds[action]
+          if @state[key] and not @prevState[key]
+            @sequences[sequenceKey].lastPressed = timer.getTime!
+            @sequences[sequenceKey].currentIdx += 1
+
+      else
+        delay = @sequences[sequenceKey].sequence[@sequences[sequenceKey].currentIdx]
+        action = @sequences[sequenceKey].sequence[@sequences[sequenceKey].currentIdx + 1]
+        if (timer.getTime! - @sequences[sequenceKey].lastPressed) > delay
+          @sequences[sequenceKey] = nil
+          return
+        for _, key in ipairs @binds[action]
+          if @state[key] and not @prevState[key]
+            if (timer.getTime! - @sequences[sequenceKey].lastPressed) <= delay
+              if @sequences[sequenceKey].currentIdx + 1 == #@sequences[sequenceKey].sequence
+                @sequences[sequenceKey] = nil
+                return true
+              else
+                @sequences[sequenceKey].lastPressed = timer.getTime!
+                @sequences[sequenceKey].currentIdx += 2
+            else
+              @sequences[sequenceKey] = nil
+
+
 
 
 
