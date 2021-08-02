@@ -22,8 +22,15 @@ with love
   .load  = ->
     mapDef = assert require "assets.map"
     export map = Map mapDef, "assets/"
-    inpt = Input!
+    export inpt = Input!
     Dump inpt
+
+
+
+    inpt\bind 'c', ->
+      print "c was pressed"
+    inpt\bind 'p', "print"
+    inpt\bind 'right', "right"
     --x, y = map\pointToTile 32,-16
     --print x, y
 
@@ -34,6 +41,16 @@ with love
 
 
   .update = (dt) ->
+    if inpt\pressed "print"
+      print "p is indeed pressed"
+    if inpt\released "print"
+      print "p is indeed released"
+
+    if inpt\down "print"
+      print "p is indeed downed"
+
+    if inpt\sequence('right', 0.5, 'right')
+      print "right"
     map\update dt
     Keyboard.keysPressed = {}
     s\update dt

@@ -1,4 +1,5 @@
 import insert from table
+import remove from table
 import timer from love
 import keyboard from love
 import mouse from love
@@ -22,6 +23,25 @@ keyToButton = {
   mouse4: '4',
   mouse5: '5'
 }
+
+buttonToKey = {
+  [1]: 'mouse1',
+  [2]: 'mouse2',
+  [3]: 'mouse3',
+  [4]: 'mouse4',
+  [5]: 'mouse5',
+  ['l']: 'mouse1',
+  ['r']: 'mouse2',
+  ['m']: 'mouse3',
+  ['x1']: 'mouse4',
+  ['x2']: 'mouse5'
+}
+
+copy = (t) ->
+  out = {}
+  for k, v in pairs t
+    out[k] = v
+  out
 
 getTableKeys = (tab) ->
   keyset = {}
@@ -84,7 +104,7 @@ class Input
 
     sequenceKey = ''
     for _, seq in ipairs sequence
-      sequence ..= tostring(seq)
+      sequenceKey ..= tostring(seq)
 
     if not @sequences[sequenceKey]
       @sequences[sequenceKey] = {
@@ -152,6 +172,56 @@ class Input
           return true
 
 
+  unbind: (key) =>
+    for action, keys in pairs @binds
+      for i = #keys, 1, -1
+        if key == @binds[action][i]
+          remove @binds[action], i
+    if @functions[key]
+      @functions[key] = nil
 
 
+  unbindAll:  =>
+    @binds = {}
+    @functions = {}
 
+  update: =>
+    @pressed!
+    @prevState = copy @state
+    @state['wheelup'] = false
+    @state['wheeldown'] = false
+
+    for k, v in pairs @repeatState
+      if v
+        v.pressed = false
+        t = timer.getTime! - v.pressedTime
+        if v.delayed
+          if t > v.delay
+            v.pressed = true
+            v.pressedTime = timer.getTime!
+            v.delayed = false
+        else
+          if t > v.interval
+            v.pressed = true
+            v.pressedTime = timer.getTime!
+
+  keypressed: (key) =>
+    @state[key] = true
+
+  keyreleased: (key) =>
+    @state[key] = false
+    @repeatState[key] = false
+
+  mousepressed: (x, y, button) =>
+     @state[buttonToKey[button]] = true
+
+
+  mousepressed: (x, y, button) =>
+     @state[buttonToKey[button]] = false
+     @repeatState[buttonToKey[button]] = false
+
+  wheelmoved: (x, y) =>
+    if y > 0
+      @state['wheelup'] = true
+    if y < 0
+      @state['wheeldown'] = true
